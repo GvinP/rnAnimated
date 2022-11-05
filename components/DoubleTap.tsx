@@ -38,9 +38,9 @@ const DoubleTap = () => {
   }, []);
 
   const singleTapGestureHandler = useCallback(() => {
-    opacity.value = withSpring(0, undefined, (isFinished) => {
+    opacity.value = withTiming(0, undefined, (isFinished) => {
       if (isFinished) {
-        opacity.value = withDelay(500, withSpring(1));
+        opacity.value = withDelay(500, withTiming(1));
       }
     });
   }, []);
