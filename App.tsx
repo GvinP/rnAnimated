@@ -1,13 +1,13 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import PinchGestureHandlerExample from "./components/PinchGestureHandlerExample";
+import DoubleTap from "./components/DoubleTap";
 
 export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <PinchGestureHandlerExample />
+      <DoubleTap />
     </View>
   );
 }
