@@ -1,13 +1,13 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import DoubleTap from "./components/DoubleTap";
+import ScrollViewExample from "./components/ScrollViewExample/ScrollView";
 
 export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <DoubleTap />
+      <ScrollViewExample />
     </View>
   );
 }
