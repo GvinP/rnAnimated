@@ -1,13 +1,13 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import ScrollViewExample from "./components/ScrollViewExample/ScrollView";
+import ColorPicker from "./components/ColorPicker/ColorPicker";
 
 export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <ScrollViewExample />
+      <ColorPicker />
     </View>
   );
 }
