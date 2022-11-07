@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "emptyproject",
+    "displayName": "name",
     "slug": "emptyproject",
     "version": "1.0.0",
     "orientation": "portrait",

@@ -1,14 +1,17 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import CircularProgressBar from "./components/CircularProgressBar";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import TodoList from "./components/todos/TodoList";
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <StatusBar style="auto" />
-      <CircularProgressBar />
-    </View>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <StatusBar style="auto" />
+        <TodoList />
+      </View>
+    </GestureHandlerRootView>
   );
 }
 
