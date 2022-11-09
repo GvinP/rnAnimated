@@ -1,8 +1,6 @@
 import React from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-import {
-  PanGestureHandler,
-} from "react-native-gesture-handler";
+import { PanGestureHandler } from "react-native-gesture-handler";
 import Animated, {
   Easing,
   Extrapolate,
@@ -39,7 +37,7 @@ const timmingConfig = {
 const start = 1;
 const values: VALUES[] = new Array(4).fill(0).map((_, i) => {
   const value = start + i;
-  return { value, label: `${value} четверть` };
+  return { value, label: `${value} четверть, 2021 - 2022` };
 });
 
 const snapPoint = (value: number, velocity: number, points: number[]) => {
@@ -91,14 +89,7 @@ const GestureHandler = ({ max, pickerTranslateY }: GestureHandlerProps) => {
 
   return (
     <PanGestureHandler onGestureEvent={gestureHandler}>
-      <Animated.View
-        style={[
-          StyleSheet.absoluteFillObject,
-          {
-            backgroundColor: "transparent",
-          },
-        ]}
-      />
+      <Animated.View style={StyleSheet.absoluteFillObject} />
     </PanGestureHandler>
   );
 };
@@ -112,7 +103,7 @@ const Picker = ({ values }: PickerProps) => {
 
   return (
     <View style={styles.pickerContainer}>
-      <Animated.View style={[viewStyle, { backgroundColor: "transparent" }]}>
+      <Animated.View style={viewStyle}>
         {values.map((v, i) => {
           const y = useDerivedValue(() =>
             interpolate(
@@ -127,15 +118,13 @@ const Picker = ({ values }: PickerProps) => {
             transform: [
               { perspective: 500 },
               { rotateX: 90 * y.value + "deg" },
-              {
-                scale: 1 - 0.1 * Math.abs(y.value),
-              },
+              { scale: 1 - 0.1 * Math.abs(y.value) },
             ],
           }));
 
           return (
             <Animated.View key={v.value} style={[styles.item, childViewStyle]}>
-                <Text style={styles.label}>{v.label}</Text>
+              <Text style={styles.label}>{v.label}</Text>
             </Animated.View>
           );
         })}
@@ -159,7 +148,7 @@ export default Index;
 const styles = StyleSheet.create({
   appContainer: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.1)",
+    backgroundColor: "rgba(0,0,0,0.3)",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -176,7 +165,9 @@ const styles = StyleSheet.create({
   },
   label: {
     color: "#464646",
-    fontSize: 24,
+    fontSize: 12,
+    fontWeight: "600",
+    textTransform: "uppercase",
     lineHeight: ITEM_HEIGHT,
     textAlign: "center",
     textAlignVertical: "center",
