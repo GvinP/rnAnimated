@@ -1,10 +1,22 @@
-import React from "react";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
-import { PanGestureHandler } from "react-native-gesture-handler";
+import React, { useRef } from "react";
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import {
+  PanGestureHandler,
+  PanGestureHandlerGestureEvent,
+  TapGestureHandler,
+} from "react-native-gesture-handler";
 import Animated, {
   Easing,
   Extrapolate,
   interpolate,
+  runOnJS,
+  useAnimatedScrollHandler,
   useAnimatedGestureHandler,
   useAnimatedReaction,
   useAnimatedStyle,
@@ -13,18 +25,9 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-interface VALUES {
-  value: number;
-  label: string;
-}
-
-interface PickerProps {
-  values: VALUES[];
-}
-
-interface GestureHandlerProps {
-  max: number;
-  pickerTranslateY: Animated.SharedValue<number>;
+interface Period {
+  id: number;
+  name: string;
 }
 
 const { width: WIDTH } = Dimensions.get("window");
@@ -35,9 +38,9 @@ const timmingConfig = {
   easing: Easing.bezier(0.22, 1, 0.36, 1),
 };
 const start = 1;
-const values: VALUES[] = new Array(4).fill(0).map((_, i) => {
-  const value = start + i;
-  return { value, label: `${value} четверть, 2021 - 2022` };
+const periods: Period[] = new Array(88).fill(0).map((_, i) => {
+  const id = start + i;
+  return { id, name: `${id} полугодие, 2021 - 2022` };
 });
 
 const snapPoint = (value: number, velocity: number, points: number[]) => {
@@ -46,107 +49,97 @@ const snapPoint = (value: number, velocity: number, points: number[]) => {
   const deltas = points.map((p) => {
     return Math.abs(point - p);
   });
-  const minDelta = Math.min.apply(null, deltas);
+  const minDelta = Math.min(...deltas);
   return points.filter((p) => {
     return Math.abs(point - p) === minDelta;
   })[0];
 };
 
-const usePanGestureHandler = (snapPoints: number[]) => {
+const Picker = () => {
+  const ref = useRef()
+  const translateY = useSharedValue(0);
+  const pickerAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
   const offset = useSharedValue(-ITEM_HEIGHT);
   const position = useSharedValue(offset.value);
   const toValue = useSharedValue(0);
+  const snapPoints = new Array(periods.length)
+    .fill(0)
+    .map((_, i) => i * -ITEM_HEIGHT);
 
-  const gestureHandler = useAnimatedGestureHandler({
-    onStart: () => {
-      offset.value = position.value;
-    },
-    onActive: (event) => {
-      position.value = offset.value + event.translationY;
-      toValue.value = snapPoint(position.value, event.velocityY, snapPoints);
-    },
-    onEnd: () => {
-      position.value = withTiming(toValue.value, timmingConfig);
-    },
-  });
-
-  return { position, gestureHandler };
-};
-
-const GestureHandler = ({ max, pickerTranslateY }: GestureHandlerProps) => {
-  const snapPoints = new Array(max).fill(0).map((_, i) => i * -ITEM_HEIGHT);
-  const { position, gestureHandler } = usePanGestureHandler(snapPoints);
+  const gestureHandler =
+    useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
+      onStart: () => {
+        offset.value = position.value;
+      },
+      onActive: (event) => {
+        position.value = offset.value + event.translationY;
+        toValue.value = snapPoint(position.value, event.velocityY, snapPoints);
+      },
+      onEnd: () => {
+        position.value = withTiming(toValue.value, timmingConfig);
+      },
+    });
 
   useAnimatedReaction(
     () => {
       position.value;
     },
     () => {
-      pickerTranslateY.value = position.value + ITEM_HEIGHT * 2;
+      translateY.value = position.value + ITEM_HEIGHT * 2;
     },
     []
   );
-
   return (
-    <PanGestureHandler onGestureEvent={gestureHandler}>
-      <Animated.View style={StyleSheet.absoluteFillObject} />
-    </PanGestureHandler>
-  );
-};
+    <View style={styles.container}>
+      <View style={styles.pickerContainer}>
+        <Animated.View style={pickerAnimatedStyle}>
+          {periods.map((period, i) => {
+            const y = useDerivedValue(() =>
+              interpolate(
+                (translateY.value - ITEM_HEIGHT * 2) / -ITEM_HEIGHT,
+                [i - 3, i, i + 3],
+                [-1, 0, 1],
+                Extrapolate.CLAMP
+              )
+            );
 
-const Picker = ({ values }: PickerProps) => {
-  const translateY = useSharedValue(0);
+            const periodAnimatedStyle = useAnimatedStyle(() => ({
+              transform: [
+                { perspective: 500 },
+                { rotateX: 90 * y.value + "deg" },
+                { scale: 1 - 0.1 * Math.abs(y.value) },
+              ],
+            }));
 
-  const viewStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }],
-  }));
-
-  return (
-    <View style={styles.pickerContainer}>
-      <Animated.View style={viewStyle}>
-        {values.map((v, i) => {
-          const y = useDerivedValue(() =>
-            interpolate(
-              (translateY.value - ITEM_HEIGHT * 2) / -ITEM_HEIGHT,
-              [i - 3, i, i + 3],
-              [-1, 0, 1],
-              Extrapolate.CLAMP
-            )
-          );
-
-          const childViewStyle = useAnimatedStyle(() => ({
-            transform: [
-              { perspective: 500 },
-              { rotateX: 90 * y.value + "deg" },
-              { scale: 1 - 0.1 * Math.abs(y.value) },
-            ],
-          }));
-
-          return (
-            <Animated.View key={v.value} style={[styles.item, childViewStyle]}>
-              <Text style={styles.label}>{v.label}</Text>
-            </Animated.View>
-          );
-        })}
-      </Animated.View>
-      <GestureHandler pickerTranslateY={translateY} max={values.length} />
-      <View style={styles.mask} />
+            return (
+              <Animated.View
+                key={period.id}
+                style={[styles.period, periodAnimatedStyle]}
+              >
+                <Text style={styles.name}>{period.name}</Text>
+              </Animated.View>
+            );
+          })}
+        </Animated.View>
+        <TapGestureHandler waitFor={ref} onActivated={()=>alert("hi")}>
+          <Animated.View style={[StyleSheet.absoluteFillObject]}>
+            <PanGestureHandler onGestureEvent={gestureHandler} ref={ref}>
+              <Animated.View style={StyleSheet.absoluteFillObject} />
+            </PanGestureHandler>
+          </Animated.View>
+        </TapGestureHandler>
+        <View style={styles.mask} />
+      </View>
     </View>
   );
 };
 
-const Index = () => {
-  return (
-    <View style={styles.appContainer}>
-      <Picker values={values} />
-    </View>
-  );
-};
-
-export default Index;
+export default Picker;
 
 const styles = StyleSheet.create({
-  appContainer: {
+  container: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.3)",
     justifyContent: "center",
@@ -159,11 +152,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#FAFAFA",
     borderRadius: 16,
   },
-  item: {
+  period: {
     height: ITEM_HEIGHT,
     justifyContent: "center",
   },
-  label: {
+  name: {
     color: "#464646",
     fontSize: 12,
     fontWeight: "600",
