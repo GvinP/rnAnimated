@@ -1,15 +1,69 @@
 import { StyleSheet, Text, View, Image, Dimensions } from "react-native";
 import React from "react";
 import { PageInterface } from "./constants";
+import Animated, {
+  Extrapolate,
+  interpolate,
+  useAnimatedStyle,
+} from "react-native-reanimated";
 
 const { width: PAGE_WIDTH, height: PAGE_HEIGHT } = Dimensions.get("window");
 
-const Page: React.FC<PageInterface> = ({ title, description, source }) => {
+interface PageProps extends PageInterface {
+  translateX: Animated.SharedValue<number>;
+  index: number;
+}
+
+const Page: React.FC<PageProps> = ({
+  title,
+  description,
+  source,
+  translateX,
+  index,
+}) => {
+  const inputRange = [
+    (index - 1) * PAGE_WIDTH,
+    index * PAGE_WIDTH,
+    (index + 1) * PAGE_WIDTH,
+  ];
+  const rCircleStyle = useAnimatedStyle(() => {
+    const scale = interpolate(
+      translateX.value,
+      inputRange,
+      [0, 1, 0],
+      Extrapolate.CLAMP
+    );
+    return {
+      transform: [{ scale }],
+    };
+  });
+  const rImageStyle = useAnimatedStyle(() => {
+    const progress = interpolate(
+      translateX.value,
+      inputRange,
+      [0, 0, 1],
+      Extrapolate.CLAMP
+    );
+    const opacity = interpolate(
+      translateX.value,
+      inputRange,
+      [0.5, 1, 0.5],
+      Extrapolate.CLAMP
+    );
+    return {
+      opacity,
+      transform: [{ rotate: `${progress * Math.PI}rad` }],
+    };
+  });
   return (
     <View style={styles.container}>
       <View style={styles.circleContainer}>
-        <View style={styles.circle} />
-        <Image {...{ source }} style={styles.image} resizeMode={"contain"} />
+        <Animated.View style={[styles.circle, rCircleStyle]} />
+        <Animated.Image
+          {...{ source }}
+          style={[styles.image, rImageStyle]}
+          resizeMode={"contain"}
+        />
       </View>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.description}>{description}</Text>
