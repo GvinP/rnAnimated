@@ -1,15 +1,15 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, SafeAreaView } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import Onboarding from "./components/Onboarding/Onboarding";
+import Menu from "./components/Menu";
 
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <StatusBar style="auto" />
-        <Onboarding />
+        <StatusBar style="inverted" />
+        <Menu />
       </View>
     </GestureHandlerRootView>
   );
