@@ -2,14 +2,14 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import AnimatedAPI from "./components/AnimatedAPI";
+import Onboarding from "./components/Onboarding/Onboarding";
 
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
         <StatusBar style="auto" />
-        <AnimatedAPI />
+        <Onboarding />
       </View>
     </GestureHandlerRootView>
   );
