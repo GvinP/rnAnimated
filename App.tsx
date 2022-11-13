@@ -2,15 +2,14 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import Clock from "./components/Clock/Clock";
-import Picker from "./components/Picker";
+import Gesture from "./components/GestureHandler2";
 
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
         <StatusBar style="inverted" />
-        <Clock />
+        <Gesture />
       </View>
     </GestureHandlerRootView>
   );
