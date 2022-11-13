@@ -2,6 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Clock from "./components/Clock/Clock";
 import Picker from "./components/Picker";
 
 export default function App() {
@@ -9,7 +10,7 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
         <StatusBar style="inverted" />
-        <Picker />
+        <Clock />
       </View>
     </GestureHandlerRootView>
   );
@@ -18,7 +19,5 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
   },
 });
