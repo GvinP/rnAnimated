@@ -24,6 +24,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import * as Haptics from 'expo-haptics';
 
 interface Period {
   id: number;
@@ -67,7 +68,7 @@ const Picker = () => {
   const snapPoints = new Array(periods.length)
     .fill(0)
     .map((_, i) => i * -ITEM_HEIGHT);
-
+const haptic = () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
   const gestureHandler =
     useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
       onStart: () => {
@@ -76,9 +77,16 @@ const Picker = () => {
       onActive: (event) => {
         position.value = offset.value + event.translationY;
         toValue.value = snapPoint(position.value, event.velocityY, snapPoints);
+        console.log(snapPoints.includes(position.value))
+        if (toValue.value===position.value) {
+          console.log("first")
+          runOnJS(haptic)()
+        }
       },
       onEnd: () => {
-        position.value = withTiming(toValue.value, timmingConfig);
+        position.value = withTiming(toValue.value, timmingConfig, ()=>{
+          runOnJS(haptic)()
+        });
       },
     });
 
