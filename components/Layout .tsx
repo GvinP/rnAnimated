@@ -1,6 +1,12 @@
-import { StyleSheet, TouchableOpacity, View, ScrollView, Text } from "react-native";
-import React, {useState} from "react";
-import Animated, { FadeIn } from "react-native-reanimated";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  ScrollView,
+  Text,
+} from "react-native";
+import React, { useState, useEffect } from "react";
+import Animated, { FadeIn, FadeOut, Layout } from "react-native-reanimated";
 
 const LIST_ITEM_COLOR = "#1798DE";
 
@@ -8,14 +14,26 @@ interface Item {
   id: number;
 }
 
-const Layout = () => {
-    const [list, setList] = useState<Item[]>([])
-    const onAdd = () => {
-        setList((currentItems)=> {
-            const nextItemId = (currentItems[currentItems.length-1]?.id||0) + 1
-            return [...currentItems, {id: nextItemId}]
-        })
-    }
+const LayoutAnimation = () => {
+  const [initial, setInitial] = useState(true);
+  const [list, setList] = useState<Item[]>(
+    new Array(5).fill(0).map((_, index) => ({ id: index }))
+  );
+
+  useEffect(() => {
+    setInitial(false);
+  }, []);
+  const onAdd = () => {
+    setList((currentItems) => {
+      const nextItemId = (currentItems[currentItems.length - 1]?.id || 0) + 1;
+      return [...currentItems, { id: nextItemId }];
+    });
+  };
+  const onDelete = (itemId: number) => {
+    setList((currentItems) => {
+      return currentItems.filter((item) => item.id !== itemId);
+    });
+  };
   return (
     <>
       <TouchableOpacity style={styles.button} onPress={onAdd}>
@@ -25,15 +43,22 @@ const Layout = () => {
         style={styles.container}
         contentContainerStyle={{ paddingVertical: 50 }}
       >
-        {list.map((item) => (
-          <Animated.View key={item.id} entering={FadeIn} style={styles.item} />
+        {list.map((item, index) => (
+          <Animated.View
+            key={item.id}
+            entering={initial ? FadeIn.delay(100 * index) : FadeIn}
+            exiting={FadeOut}
+            layout={Layout.duration(100)}
+            style={styles.item}
+            onTouchEnd={() => onDelete(item.id)}
+          />
         ))}
       </ScrollView>
     </>
   );
 };
 
-export default Layout;
+export default LayoutAnimation;
 
 const styles = StyleSheet.create({
   container: {
@@ -61,11 +86,11 @@ const styles = StyleSheet.create({
     bottom: 30,
     right: "5%",
     zIndex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   iconText: {
-    color: 'white',
+    color: "white",
     fontSize: 40,
-  }
+  },
 });
