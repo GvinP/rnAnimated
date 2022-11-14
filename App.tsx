@@ -2,14 +2,14 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import Gesture from "./components/GestureHandler2";
+import Layout from "./components/Layout ";
 
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <StatusBar style="inverted" />
-        <Gesture />
+        <StatusBar style="auto" />
+        <Layout />
       </View>
     </GestureHandlerRootView>
   );
