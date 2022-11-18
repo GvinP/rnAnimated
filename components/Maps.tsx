@@ -1,13 +1,22 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE, Callout } from "react-native-maps";
 import { StyleSheet, Text, View, Dimensions } from "react-native";
+import * as Location from "expo-location";
 
 const Maps = () => {
+  useEffect(() => {
+    (async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        return;
+      }
+    })();
+  }, []);
   return (
     <View style={styles.container}>
       <MapView
         style={styles.map}
-        // provider={PROVIDER_GOOGLE}
+        provider={PROVIDER_GOOGLE}
         initialRegion={{
           latitude: 56.838938,
           longitude: 60.603195,
@@ -22,13 +31,21 @@ const Maps = () => {
           }}
           pinColor={"green"}
         >
-            <Callout>
-                <View style={{width: 200, height: 150, borderRadius: 20, backgroundColor: "#cecece", margin: 0}}>
-                    <Text>
-                    Билеты в театр
-                    </Text>
-                </View>
-            </Callout>
+          <Callout>
+            <View
+              style={{
+                width: 200,
+                height: 150,
+                borderRadius: 20,
+                backgroundColor: "#cecece",
+                margin: 0,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text>PROVIDER_GOOGLE</Text>
+            </View>
+          </Callout>
         </Marker>
       </MapView>
     </View>
