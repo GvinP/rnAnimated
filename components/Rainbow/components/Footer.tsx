@@ -6,23 +6,23 @@ import Button from "./Button";
 
 const styles = StyleSheet.create({
   balance: {
-    padding: 16,
+    padding: 4,
     flexDirection: "row",
     justifyContent: "space-between",
   },
   actions: {
-    padding: 16,
+    padding: 4,
     flexDirection: "row",
     justifyContent: "space-between",
   },
   label: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "bold",
     color: "grey",
   },
   value: {
     color: "black",
-    fontSize: 24,
+    fontSize: 20,
   },
 });
 
