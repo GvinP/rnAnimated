@@ -9,6 +9,7 @@ import { Prices, DataPoints, SIZE } from "./Model";
 import Header from "./Header";
 import Cursor from "./Cursor";
 import data from "./data.json";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 const { width } = Dimensions.get("window");
 
@@ -100,8 +101,11 @@ const styles = StyleSheet.create({
 });
 
 const Graph = () => {
-  const [selected, setSelected] = useState(0);
-  const current = graphs[selected].data;
+  const selected = useSharedValue(0);
+  const current = graphs[selected.value].data;
+  const style = useAnimatedStyle(() => {
+    return { transform: [{ translateX: BUTTON_WIDTH * selected.value }] };
+  });
   return (
     <View style={styles.container}>
       <Header data={current} />
@@ -114,23 +118,20 @@ const Graph = () => {
             strokeWidth={3}
           />
         </Svg>
-        <Cursor data={current} />
+        {/* 
+        // @ts-ignore */}
+        <Cursor data={current.path} />
       </View>
       <View style={styles.selection}>
         <View style={StyleSheet.absoluteFill}>
-          <View
-            style={[
-              styles.backgroundSelection,
-              { transform: [{ translateX: BUTTON_WIDTH * selected }] },
-            ]}
-          />
+          <Animated.View style={[styles.backgroundSelection, style]} />
         </View>
         {graphs.map((graph, index) => {
           return (
             <TouchableWithoutFeedback
               key={graph.label}
               onPress={() => {
-                setSelected(index);
+                selected.value = withTiming(index);
               }}
             >
               <View style={[styles.labelContainer]}>

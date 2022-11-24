@@ -1,5 +1,13 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
+import { PanGestureHandler } from "react-native-gesture-handler";
+import Animated, {
+  useAnimatedGestureHandler,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import { getYForX, Path } from "react-native-redash";
 
 const CURSOR = 50;
 const styles = StyleSheet.create({
@@ -20,16 +28,40 @@ const styles = StyleSheet.create({
 });
 
 interface CursorProps {
-  data: { path: string };
+  data: Path;
 }
 
 const Cursor = ({ data }: CursorProps) => {
+  const active = useSharedValue(false);
+  const x = useSharedValue(0);
+  const onGestureEvent = useAnimatedGestureHandler({
+    onStart: () => {
+      active.value = true;
+    },
+    onActive: (event) => {
+      x.value = event.x;
+    },
+    onEnd: () => {
+      active.value = false;
+    },
+  });
+  const style = useAnimatedStyle(() => {
+    const translateX = x.value
+    const translateY = getYForX(data, x.value)
+
+    return {
+      transform: [],
+      opacity: withTiming(active.value ? 1 : 0),
+    };
+  });
   return (
-    <View style={StyleSheet.absoluteFill}>
-      <View style={[styles.cursor]}>
-        <View style={styles.cursorBody} />
-      </View>
-    </View>
+    <PanGestureHandler onGestureEvent={onGestureEvent}>
+      <Animated.View style={StyleSheet.absoluteFill}>
+        <Animated.View style={[styles.cursor, style]}>
+          <View style={styles.cursorBody} />
+        </Animated.View>
+      </Animated.View>
+    </PanGestureHandler>
   );
 };
 
