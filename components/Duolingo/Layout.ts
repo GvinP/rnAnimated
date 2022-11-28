@@ -20,8 +20,17 @@ const byOrder = (a: Offset, b: Offset) => {
   return a.order.value > b.order.value ? 1 : -1;
 };
 
+export const remove = (input: Offset[], index: number) => {
+  "worklet";
+  const offsets = input.filter(isNotInWordBank).sort(byOrder);
+  offsets[index].order.value = -1;
+  offsets.splice(index, 1);
+  offsets.map((offset, i) => (offset.order.value = i));
+};
+
 export const lastOrder = (input: Offset[]) => {
-  
+  "worklet";
+  return input.filter(isNotInWordBank).length;
 };
 
 export const reorder = (input: Offset[], from: number, to: number) => {

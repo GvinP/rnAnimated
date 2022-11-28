@@ -13,7 +13,7 @@ import {
 } from "react-native-gesture-handler";
 import { between, useVector } from "react-native-redash";
 
-import { lastOrder, Offset } from "./Layout";
+import { calculateLayout, lastOrder, Offset, remove } from "./Layout";
 import Placeholder, { MARGIN_TOP, MARGIN_LEFT } from "./components/Placeholder";
 
 interface SortableWordProps {
@@ -71,11 +71,17 @@ const SortableWord = ({
       translation.x.value = translationX + ctx.x;
       translation.y.value = translationY + ctx.y;
       if (isInBank.value && translation.y.value < 100) {
-        offset.order.value = lastOrder(offsets)
+        offset.order.value = lastOrder(offsets);
+        calculateLayout(offsets, containerWidth);
+      } else if (!isInBank.value && translation.y.value > 100) {
+        remove(offsets, index);
+        calculateLayout(offsets, containerWidth);
       }
     },
     onEnd: () => {
       isGestureActive.value = false;
+      translation.x.value = withSpring(offset.x.value);
+      translation.y.value = withSpring(offset.y.value);
     },
   });
   const style = useAnimatedStyle(() => {
