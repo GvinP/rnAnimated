@@ -22,9 +22,10 @@ const byOrder = (a: Offset, b: Offset) => {
 
 export const remove = (input: Offset[], index: number) => {
   "worklet";
-  const offsets = input.filter(isNotInWordBank).sort(byOrder);
-  offsets[index].order.value = -1;
-  offsets.splice(index, 1);
+  const offsets = input
+    .filter((_, i) => i !== index)
+    .filter(isNotInWordBank)
+    .sort(byOrder);
   offsets.map((offset, i) => (offset.order.value = i));
 };
 
