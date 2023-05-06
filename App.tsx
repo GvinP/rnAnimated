@@ -3,7 +3,7 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import CircularSlider from "./components/CircularSlider";
+import Graph from "./components/Graph";
 
 export default function App() {
   return (
@@ -11,7 +11,7 @@ export default function App() {
       <SafeAreaProvider style={{ flex: 1 }}>
         <View style={styles.container}>
           <StatusBar style="auto" />
-          <CircularSlider />
+          <Graph />
         </View>
       </SafeAreaProvider>
     </GestureHandlerRootView>
